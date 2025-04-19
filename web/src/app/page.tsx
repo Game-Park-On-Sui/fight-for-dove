@@ -1,103 +1,118 @@
-import Image from "next/image";
+'use client'
+
+import {useBetterSignAndExecuteTransaction, useMediaSize} from "@/hooks";
+import "@/app/page.css"
+import {Info, RefreshCw} from "lucide-react";
+import {CustomSuiButton, ReadingInfo, Waiting} from "@/components";
+import {ChangeEvent, useContext, useEffect, useState} from "react";
+import {UserContext} from "@/contexts";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const [width, height] = useMediaSize();
+    const userInfo = useContext(UserContext);
+    const [isWaiting, setIsWaiting] = useState<boolean>(false);
+    const [inputCount, setInputCount] = useState<string>("");
+    const [timerID, setTimerID] = useState<number | NodeJS.Timeout>();
+    const [isReadingInfo, setIsReadingInfo] = useState<boolean>(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    const changeInputCount = (e: ChangeEvent<HTMLInputElement>) => {
+        const amount = e.target.value;
+        for (let i = 0; i < amount.length; i++) {
+            const num = amount[i];
+            if (num < '0' || num > '9')
+                return;
+        }
+        let i = 0;
+        while (i < amount.length && amount[i] === '0')
+            i = i + 1;
+        const finalAmount = i < amount.length ? amount.slice(i) : '';
+        setInputCount(finalAmount);
+    }
+
+    useEffect(() => {
+        if (timerID)
+            clearInterval(timerID);
+        const id = setInterval(userInfo.refreshInfo, 10000);
+        setTimerID(id);
+        return () => {
+            clearInterval(timerID);
+        }
+    }, [userInfo.account]);
+
+    useEffect(() => {
+        if (!localStorage.getItem("notFirst")) {
+            setIsReadingInfo(true);
+            localStorage.setItem("notFirst", "true");
+        }
+    }, []);
+
+    const canBuyGameCount = () => {
+        return userInfo.account && userInfo.gp && Number(userInfo.gp) > 0 && inputCount && Number(userInfo.gp) >= Number(inputCount);
+    }
+
+    const handleClickBuyGameCount = () => {
+        if (!canBuyGameCount())
+            return;
+        console.log(inputCount);
+    }
+
+    return (
+        <div style={{
+            position: 'relative',
+            width: `${width}px`,
+            height: `${height}px`,
+            minWidth: "1280px",
+            minHeight: "720px"
+        }}>
+            <div
+                className="absolute w-full h-full border border-blue-600 rounded-full opacity-20 -z-50 overflow-hidden">
+                <div className="fixed w-full h-full animate-move">
+                    <div
+                        className="w-full h-full bg-[url(https://mainnet-aggregator.hoh.zone/v1/blobs/7zi-F7J4B9JqsQ_PjfIpTUiK1NZywVXRiC00deTHZ2Q)] bg-contain bg-no-repeat bg-center animate-rotate"></div>
+                </div>
+            </div>
+            <div
+                className="absolute w-[960px] h-[540px] 2xl:w-[1280px] 2xl:h-[720px]  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+                <div className="w-full h-full border-2 border-[#0a0e0f]">
+                    <iframe src="http://192.168.31.189:7456" className="w-full h-full"></iframe>
+                </div>
+                {/* left */}
+                {/*<div className="fixed w-28 h-full border-2 border-[#0a0e0f] top-0 -left-36 flex flex-col justify-center gap-6 items-center">*/}
+                {/*    <span>NewGame</span>*/}
+                {/*    <span>BuySteps</span>*/}
+                {/*</div>*/}
+                {/* right */}
+                <div
+                    className="fixed w-28 h-full border-2 border-[#0a0e0f] top-0 -right-36 flex flex-col justify-center gap-6 items-center">
+                    <div className="flex flex-col gap-2 items-center mb-6">
+                        <div className="flex gap-2 items-center">
+                            <CustomSuiButton/>
+                            <RefreshCw
+                                className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]"
+                                size={12}
+                                onClick={userInfo.refreshInfo}
+                            />
+                        </div>
+                        <hr className="w-full border-[#041f4b]"/>
+                    </div>
+                    <span className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]">Market</span>
+                    <div className="flex flex-col gap-1 items-center">
+                        <input className="w-full font-bold focus:outline-none text-center px-1"
+                               placeholder="input Count" value={inputCount} onChange={changeInputCount}/>
+                        <span
+                            className={canBuyGameCount() ? "cursor-pointer text-[#196ae3] hover:text-[#35aaf7]" : "text-[#afb3b5]"}
+                            onClick={handleClickBuyGameCount}>BuyGameCnt</span>
+                    </div>
+                    <div className="flex flex-col gap-2 items-center text-xs text-[#afb3b5]">
+                        <span>GP: {userInfo.gp}</span>
+                    </div>
+                    <Info className="absolute bottom-1 right-1 cursor-pointer text-[#196ae3] hover:text-[#35aaf7]"
+                          size={20}
+                          onClick={() => setIsReadingInfo(true)}/>
+                </div>
+            </div>
+            {isReadingInfo && <ReadingInfo setIsReadingInfo={setIsReadingInfo}/>}
+            {isWaiting && <Waiting/>}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    );
 }
