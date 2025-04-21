@@ -21,6 +21,7 @@ export class Enemy extends Component {
     @property({type: colorConfig})
     colors: colorConfig[] = [];
 
+    private _HP: number = 5000
     private _spine: sp.Skeleton = null;
     private _time = 0;
     private _color = new Color(255, 255, 255, 255);
@@ -37,7 +38,10 @@ export class Enemy extends Component {
         const config = this.colors[Math.floor(Math.random() * this.colors.length)]
         this._time = config.time;
         this._color = config.color;
-        // this.onDeath();
+        if ((this._HP -= 1000) <= 0) {
+            this.onDeath();
+            return;
+        }
         this.scheduleOnce(this.onNormal, this._time);
         this.onHit();
     }
