@@ -41,7 +41,6 @@ export class Enemy extends Component {
     onLoad() {
         this._spine = this.node.getComponent(sp.Skeleton);
         this.node.on(Node.EventType.TOUCH_START, this.onTouchDown, this);
-        this.randomTargetPos();
     }
 
     update(deltaTime: number) {
@@ -52,13 +51,16 @@ export class Enemy extends Component {
         this.node.setPosition(pos.x + this._moveDir * this._speed * deltaTime, pos.y, pos.z);
     }
 
-    async onTouchDown() {
+    onTouchDown() {
+        if (this._HP <= 0)
+            return;
         this.showDamage(1000);
         this.unschedule(this.onNormal);
         const config = this.colors[Math.floor(Math.random() * this.colors.length)]
         this._time = config.time;
         this._color = config.color;
         if ((this._HP -= 1000) <= 0) {
+            this._speed = 0;
             this.onDeath();
             this.scheduleOnce(() => AudioManager.inst.playOneShot(this.dieMusic, 1), 1);
             return;
@@ -104,6 +106,7 @@ export class Enemy extends Component {
                 this._spine.customMaterial = this.aliveMat;
                 color.a = 255;
                 this._spine.color = color;
+                GameManager.instance.putNode(this.node);
             }).start();
         }, 1.8);
     }
@@ -124,6 +127,11 @@ export class Enemy extends Component {
         this._moveDir = this._targetX - pos.x > 0 ? 1 : -1;
         this._scale.x =  this._moveDir === 1 ? 0.6 : -0.6;
         this.node.scale = this._scale;
+    }
+
+    init(hp: number) {
+        this._HP = hp;
+        this.randomTargetPos();
     }
 }
 
