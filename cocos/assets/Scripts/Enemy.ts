@@ -1,4 +1,6 @@
 import {_decorator, Component, Node, Material, Color, sp, Vec3, tween} from 'cc';
+import {GameManager} from "db://assets/Scripts/GameManager";
+import {dmgCtrl} from "db://assets/Scripts/dmgCtrl";
 
 const {ccclass, property} = _decorator;
 
@@ -34,6 +36,7 @@ export class Enemy extends Component {
     }
 
     async onTouchDown() {
+        this.showDamage(1000);
         this.unschedule(this.onNormal);
         const config = this.colors[Math.floor(Math.random() * this.colors.length)]
         this._time = config.time;
@@ -84,6 +87,14 @@ export class Enemy extends Component {
                 this._spine.color = color;
             }).start();
         }, 1.8);
+    }
+
+    showDamage(damage: number, showType: number = 0) {
+        const node = GameManager.instance.getNode();
+        node.setParent(this.node.parent);
+        const pos = this.node.getPosition();
+        node.setPosition(pos.x - 40 + 80 * Math.random(), pos.y + 150, 0);
+        node.getComponent(dmgCtrl).init(damage, showType);
     }
 }
 
