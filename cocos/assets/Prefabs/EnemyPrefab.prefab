@@ -172,6 +172,14 @@
         "__id__": 11
       }
     ],
+    "hitMusic": {
+      "__uuid__": "4db6b87f-f99f-41e8-b0b7-372659c5563d",
+      "__expectedType__": "cc.AudioClip"
+    },
+    "dieMusic": {
+      "__uuid__": "c77ae1eb-820e-4aa3-920f-bdc210c9c512",
+      "__expectedType__": "cc.AudioClip"
+    },
     "_id": ""
   },
   {

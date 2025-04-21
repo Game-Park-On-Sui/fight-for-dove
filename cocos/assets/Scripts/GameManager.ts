@@ -1,4 +1,5 @@
-import {_decorator, Component, Node, NodePool, Prefab, instantiate} from 'cc';
+import {_decorator, Component, Node, NodePool, Prefab, instantiate, AudioClip} from 'cc';
+import {AudioManager} from "db://assets/Scripts/AudioManager";
 
 const {ccclass, property} = _decorator;
 
@@ -6,6 +7,8 @@ const {ccclass, property} = _decorator;
 export class GameManager extends Component {
     @property({type: Prefab})
     dmgTextPrefab: Prefab = null;
+    @property({type: AudioClip})
+    bgMusic: AudioClip = null;
 
     private static _instance: GameManager = null;
     static get instance() {
@@ -18,6 +21,7 @@ export class GameManager extends Component {
 
     start() {
         GameManager._instance = this;
+        AudioManager.inst.play(this.bgMusic, true, 0.3);
     }
 
     getPool(name: string) {

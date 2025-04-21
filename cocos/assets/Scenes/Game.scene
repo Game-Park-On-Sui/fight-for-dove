@@ -120,6 +120,10 @@
       "__uuid__": "1a11c710-23d4-4916-a499-28352f096b95",
       "__expectedType__": "cc.Prefab"
     },
+    "bgMusic": {
+      "__uuid__": "8b9da6d6-d08f-4a39-9318-add64521315c",
+      "__expectedType__": "cc.AudioClip"
+    },
     "_id": "88fI4xs29N34ZixIvauioQ"
   },
   {

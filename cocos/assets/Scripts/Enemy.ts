@@ -1,6 +1,7 @@
-import {_decorator, Component, Node, Material, Color, sp, Vec3, tween} from 'cc';
+import {_decorator, Component, Node, Material, Color, sp, Vec3, tween, AudioClip} from 'cc';
 import {GameManager} from "db://assets/Scripts/GameManager";
 import {dmgCtrl} from "db://assets/Scripts/dmgCtrl";
+import {AudioManager} from "db://assets/Scripts/AudioManager";
 
 const {ccclass, property} = _decorator;
 
@@ -22,6 +23,10 @@ export class Enemy extends Component {
     deadMat: Material = null;
     @property({type: colorConfig})
     colors: colorConfig[] = [];
+    @property({type: AudioClip})
+    hitMusic: AudioClip = null;
+    @property({type: AudioClip})
+    dieMusic: AudioClip = null;
 
     private _HP: number = 5000
     private _spine: sp.Skeleton = null;
@@ -43,10 +48,12 @@ export class Enemy extends Component {
         this._color = config.color;
         if ((this._HP -= 1000) <= 0) {
             this.onDeath();
+            this.scheduleOnce(() => AudioManager.inst.playOneShot(this.dieMusic, 1), 1);
             return;
         }
         this.scheduleOnce(this.onNormal, this._time);
         this.onHit();
+        AudioManager.inst.playOneShot(this.hitMusic, 1);
     }
 
     onNormal() {
