@@ -17,7 +17,10 @@ export class Player extends Component {
 
     update(deltaTime: number) {
         const pos = this.node.getPosition();
-        this.node.setPosition(pos.x + this._moveDir * this._speed * deltaTime, pos.y, 0);
+        let destX = pos.x + this._moveDir * this._speed * deltaTime;
+        destX = Math.min(destX, 600);
+        destX = Math.max(destX, -600);
+        this.node.setPosition(destX, pos.y, 0);
     }
 
     onDestroy() {
