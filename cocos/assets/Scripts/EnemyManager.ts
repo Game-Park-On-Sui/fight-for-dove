@@ -25,5 +25,20 @@ export class EnemyManager extends Component {
         enemy.setPosition((Math.random() < 0.5 ? 1 : -1) * Math.random() * 500, Math.random() * 365, 0);
         enemy.getComponent(Enemy).init(5000);
     }
+
+    clearAllNodes() {
+        while (true) {
+            const enemy = this.node.getChildByName("EnemyPrefab");
+            if (!enemy)
+                break;
+            GameManager.instance.putNode(enemy);
+        }
+        while (true) {
+            const enemy = this.node.getChildByName("DmgPrefab");
+            if (!enemy)
+                break;
+            GameManager.instance.putNode(enemy);
+        }
+    }
 }
 

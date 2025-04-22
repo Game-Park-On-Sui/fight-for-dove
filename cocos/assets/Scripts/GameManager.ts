@@ -1,5 +1,6 @@
 import {_decorator, Component, Node, NodePool, Prefab, instantiate, AudioClip} from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
+import {EnemyManager} from "db://assets/Scripts/EnemyManager";
 
 const {ccclass, property} = _decorator;
 
@@ -53,6 +54,28 @@ export class GameManager extends Component {
 
     get playerIsAttacking() {
         return this._playerIsAttacking;
+    }
+
+    // ------ UI ------
+    @property({type: Node})
+    startUI: Node = null;
+    @property({type: Node})
+    inGameUI: Node = null;
+    @property({type: Node})
+    endUI: Node = null;
+    @property({type: Node})
+    enemyManager: Node = null;
+
+    handleClickStartGame() {
+        this.startUI.active = false;
+        this.inGameUI.active = false;
+        this.endUI.active = false;
+        this.enemyManager.active = true;
+        this.enemyManager.getComponent(EnemyManager).clearAllNodes();
+        this.scheduleOnce(() => {
+            this.inGameUI.active = true;
+            this.enemyManager.active = false;
+        }, 10);
     }
 }
 
