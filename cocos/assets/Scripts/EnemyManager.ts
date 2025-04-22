@@ -16,7 +16,7 @@ export class EnemyManager extends Component {
     }
 
     canGenerateEnemy() {
-        return Math.random() * 100 < 1;
+        return Math.random() * 666 < 1;
     }
 
     generateEnemy() {

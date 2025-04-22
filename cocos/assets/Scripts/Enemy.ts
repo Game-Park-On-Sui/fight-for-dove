@@ -1,4 +1,17 @@
-import {_decorator, Component, Node, Material, Color, sp, Vec3, tween, AudioClip} from 'cc';
+import {
+    _decorator,
+    Component,
+    Material,
+    Color,
+    sp,
+    Vec3,
+    tween,
+    AudioClip,
+    PolygonCollider2D,
+    Contact2DType,
+    Collider2D,
+    RigidBody2D
+} from 'cc';
 import {GameManager} from "db://assets/Scripts/GameManager";
 import {dmgCtrl} from "db://assets/Scripts/dmgCtrl";
 import {AudioManager} from "db://assets/Scripts/AudioManager";
@@ -37,10 +50,17 @@ export class Enemy extends Component {
     private _targetX = 0;
     private _speed = 0;
     private _moveDir = 1;
+    private _collider: PolygonCollider2D = null;
+    private _rigidBody: RigidBody2D = null;
+    private _canBeAttacked = true;
+    private _withinRange = false;
 
     onLoad() {
         this._spine = this.node.getComponent(sp.Skeleton);
-        this.node.on(Node.EventType.TOUCH_START, this.onTouchDown, this);
+        this._collider = this.getComponent(PolygonCollider2D);
+        this._collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        this._collider.on(Contact2DType.END_CONTACT, this.onEndContact, this);
+        this._rigidBody = this.getComponent(RigidBody2D);
     }
 
     update(deltaTime: number) {
@@ -49,20 +69,40 @@ export class Enemy extends Component {
             this.randomTargetPos();
         this._moveDir = this._targetX - pos.x > 0 ? 1 : -1;
         this.node.setPosition(pos.x + this._moveDir * this._speed * deltaTime, pos.y, pos.z);
+        this.checkAttack();
     }
 
-    onTouchDown() {
-        if (this._HP <= 0)
+    onDestroy() {
+        this._collider.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        this._collider.off(Contact2DType.END_CONTACT, this.onEndContact, this);
+    }
+
+    onBeginContact(_: Collider2D, other: Collider2D) {
+        if (other.tag === 111)
+            this._withinRange = true;
+    }
+
+    onEndContact(_: Collider2D, other: Collider2D) {
+        if (other.tag === 111)
+            this._withinRange = false;
+    }
+
+    checkAttack() {
+        if (this._HP <= 0 || !GameManager.instance.playerIsAttacking || !this._canBeAttacked || !this._withinRange)
             return;
-        this.showDamage(1000);
+        this._canBeAttacked = false;
+        this.scheduleOnce(() => this._canBeAttacked = true, 1);
+        this.showDamage(3333);
         this.unschedule(this.onNormal);
         const config = this.colors[Math.floor(Math.random() * this.colors.length)]
         this._time = config.time;
         this._color = config.color;
-        if ((this._HP -= 1000) <= 0) {
+        if ((this._HP -= 3333) <= 0) {
             this._speed = 0;
             this.onDeath();
             this.scheduleOnce(() => AudioManager.inst.playOneShot(this.dieMusic, 1), 1);
+            this._collider.enabled = false;
+            this._rigidBody.enabled = false;
             return;
         }
         this.scheduleOnce(this.onNormal, this._time);
@@ -125,12 +165,18 @@ export class Enemy extends Component {
         // 100 - 600
         this._speed = 100;
         this._moveDir = this._targetX - pos.x > 0 ? 1 : -1;
-        this._scale.x =  this._moveDir === 1 ? 0.6 : -0.6;
+        this._scale.x = this._moveDir === 1 ? 0.6 : -0.6;
         this.node.scale = this._scale;
     }
 
     init(hp: number) {
         this._HP = hp;
+        if (this._collider)
+            this._collider.enabled = true;
+        if (this._rigidBody)
+            this._rigidBody.enabled = true;
+        this._canBeAttacked = true;
+        this._withinRange = false;
         this.randomTargetPos();
     }
 }

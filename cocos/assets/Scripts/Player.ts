@@ -17,6 +17,7 @@ import {
     Vec2
 } from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
+import {GameManager} from "db://assets/Scripts/GameManager";
 
 const {ccclass, property} = _decorator;
 
@@ -80,7 +81,11 @@ export class Player extends Component {
         if (event.keyCode === KeyCode.KEY_J && this._attackTimer <= 0) {
             this._attackTimer = 1;
             this.anim.play("PlayerAttack");
-            this.scheduleOnce(() => this.anim.play(this._isRunning ? "PlayerRun" : "PlayerIdle"), this._attackTimer);
+            GameManager.instance.playerIsAttacking = true;
+            this.scheduleOnce(() => {
+                this.anim.play(this._isRunning ? "PlayerRun" : "PlayerIdle");
+                GameManager.instance.playerIsAttacking = false;
+            }, this._attackTimer);
             this.scheduleOnce(() => AudioManager.inst.playOneShot(this.attackMusic, 1), 0.3);
             return;
         }
@@ -88,7 +93,7 @@ export class Player extends Component {
             return;
         this._moveDir = event.keyCode === KeyCode.KEY_A ? -1 : 1;
         this.node.scale = new Vec3(this._moveDir, 1, 1);
-        this._speed = 100;
+        this._speed = 300;
         if (this.canPlayNow())
             this.anim.play("PlayerRun");
         this._isRunning = true;

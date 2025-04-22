@@ -1219,7 +1219,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "tag": 0,
+    "tag": 111,
     "_group": 32,
     "_density": 1,
     "_sensor": true,
@@ -1227,12 +1227,12 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": -16,
+      "x": -17,
       "y": -1.5
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 16,
+      "width": 18,
       "height": 4.5
     },
     "_id": "08H70bGrBPIaW62x7Q2o2V"
@@ -1247,7 +1247,7 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "tag": 0,
+    "tag": 111,
     "_group": 32,
     "_density": 1,
     "_sensor": true,
@@ -1255,12 +1255,12 @@
     "_restitution": 0,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 16,
+      "x": 17,
       "y": -1.5
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 16,
+      "width": 18,
       "height": 4.5
     },
     "_id": "04Z+jtCLVBUp2D5spdqEEu"

@@ -271,6 +271,7 @@
       "__uuid__": "c77ae1eb-820e-4aa3-920f-bdc210c9c512",
       "__expectedType__": "cc.AudioClip"
     },
+    "player": null,
     "_id": ""
   },
   {

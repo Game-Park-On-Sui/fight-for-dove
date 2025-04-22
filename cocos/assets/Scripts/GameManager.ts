@@ -10,19 +10,21 @@ export class GameManager extends Component {
     @property({type: AudioClip})
     bgMusic: AudioClip = null;
 
+    // ------ Instance ------
     private static _instance: GameManager = null;
     static get instance() {
         return this._instance;
     }
 
-    private _nodePool: {
-        [key: string]: NodePool
-    } = {};
-
     start() {
         GameManager._instance = this;
         AudioManager.inst.play(this.bgMusic, true, 0.3);
     }
+
+    // ------ NodePool ------
+    private _nodePool: {
+        [key: string]: NodePool
+    } = {};
 
     getPool(name: string) {
         if (!this._nodePool.hasOwnProperty(name))
@@ -40,6 +42,17 @@ export class GameManager extends Component {
             return;
         const pool = this.getPool(node.name);
         pool.put(node);
+    }
+
+    // ------ Player ------
+    private _playerIsAttacking = false;
+
+    set playerIsAttacking(isAttacking: boolean) {
+        this._playerIsAttacking = isAttacking;
+    }
+
+    get playerIsAttacking() {
+        return this._playerIsAttacking;
     }
 }
 
