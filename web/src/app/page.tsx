@@ -6,6 +6,7 @@ import {Info, RefreshCw} from "lucide-react";
 import {CustomSuiButton, ReadingInfo, Waiting} from "@/components";
 import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {UserContext} from "@/contexts";
+import {buyGameCountTx} from "@/libs/contracts";
 
 export default function Home() {
     const [width, height] = useMediaSize();
@@ -47,13 +48,29 @@ export default function Home() {
     }, []);
 
     const canBuyGameCount = () => {
-        return userInfo.account && userInfo.gp && Number(userInfo.gp) > 0 && inputCount && Number(userInfo.gp) >= Number(inputCount);
+        return userInfo.account && userInfo.gp && Number(userInfo.gp) > 0 && inputCount && Number(userInfo.gp) >= Number(inputCount) * 10;
     }
 
-    const handleClickBuyGameCount = () => {
+    const {handleSignAndExecuteTransaction: buyGameCount} = useBetterSignAndExecuteTransaction({
+        tx: buyGameCountTx,
+        waitForTx: true
+    });
+
+    const handleClickBuyGameCount = async () => {
         if (!canBuyGameCount())
             return;
-        console.log(inputCount);
+        await buyGameCount({
+            sender: userInfo.account!,
+            count: Number(inputCount)
+        }).beforeExecute(() => {
+            setIsWaiting(true);
+        }).onError(err => {
+            console.error(err);
+            setIsWaiting(false);
+        }).onSuccess(() => {
+            userInfo.refreshInfo();
+            setIsWaiting(false);
+        }).onExecute();
     }
 
     return (
@@ -74,7 +91,7 @@ export default function Home() {
             <div
                 className="absolute w-[960px] h-[540px] 2xl:w-[1280px] 2xl:h-[720px]  top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
                 <div className="w-full h-full border-2 border-[#0a0e0f]">
-                    <iframe src="http://192.168.31.189:7456" className="w-full h-full"></iframe>
+                    <iframe src="http://192.168.31.189:7458" className="w-full h-full"></iframe>
                 </div>
                 {/* left */}
                 {/*<div className="fixed w-28 h-full border-2 border-[#0a0e0f] top-0 -left-36 flex flex-col justify-center gap-6 items-center">*/}
@@ -103,8 +120,10 @@ export default function Home() {
                             className={canBuyGameCount() ? "cursor-pointer text-[#196ae3] hover:text-[#35aaf7]" : "text-[#afb3b5]"}
                             onClick={handleClickBuyGameCount}>BuyGameCnt</span>
                     </div>
+                    <span className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]">ViewProps</span>
                     <div className="flex flex-col gap-2 items-center text-xs text-[#afb3b5]">
                         <span>GP: {userInfo.gp}</span>
+                        <span>GameCount: {userInfo.gameCount}</span>
                     </div>
                     <Info className="absolute bottom-1 right-1 cursor-pointer text-[#196ae3] hover:text-[#35aaf7]"
                           size={20}

@@ -1,15 +1,17 @@
 'use client'
 
-import {createContext, ReactNode, useEffect, useState} from "react";
+import {createContext, ReactNode, useCallback, useEffect, useState} from "react";
 import {useCurrentAccount, useResolveSuiNSName} from "@mysten/dapp-kit";
-import {getGP} from "@/libs/contracts";
+import {getGameCount, getGP} from "@/libs/contracts";
 
 type UserInfoType = {
     account: string | null | undefined,
     suiName: string | null | undefined,
     accountLabel: string | null | undefined,
     gp: string | null | undefined,
-    refreshInfo: () => void
+    gameCount: string | null | undefined,
+    refreshInfo: () => void,
+    gameState: string | null | undefined,
 }
 
 export const UserContext = createContext<UserInfoType>({
@@ -17,21 +19,29 @@ export const UserContext = createContext<UserInfoType>({
     suiName: undefined,
     accountLabel: undefined,
     gp: undefined,
+    gameCount: undefined,
     refreshInfo: () => {},
+    gameState: undefined
 });
 
 export default function UserContextProvider({children}: {children: ReactNode}) {
     const account = useCurrentAccount();
     const {data: suiName} = useResolveSuiNSName(account?.address);
     const [gp, setGp] = useState<string>("");
+    const [gameState, setGameState] = useState<string>("");
+    const [gameCount, setGameCount] = useState<string>("");
 
-    useEffect(() => {
+    const refreshInfo = useCallback(() => {
         getGP(account?.address).then(gp => setGp(gp));
+        getGameCount(account?.address).then(userInfo => {
+            setGameState(userInfo.fields.value.fields.game_state);
+            setGameCount(userInfo.fields.value.fields.can_new_game_amount);
+        });
     }, [account]);
 
-    const refreshInfo = () => {
-        getGP(account?.address).then(gp => setGp(gp));
-    }
+    useEffect(() => {
+        refreshInfo();
+    }, [refreshInfo]);
 
     return (
         <UserContext.Provider value={{
@@ -39,7 +49,9 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
             suiName,
             accountLabel: account?.label,
             gp,
+            gameCount,
             refreshInfo,
+            gameState,
         }}>
             {children}
         </UserContext.Provider>
