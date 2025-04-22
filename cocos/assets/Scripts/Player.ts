@@ -78,7 +78,8 @@ export class Player extends Component {
         this._moveDir = event.keyCode === KeyCode.KEY_A ? -1 : 1;
         this.node.scale = new Vec3(this._moveDir, 1, 1);
         this._speed = 100;
-        this.anim.play("PlayerRun");
+        if (this.canPlayNow())
+            this.anim.play("PlayerRun");
         this._isRunning = true;
     }
 
@@ -88,7 +89,8 @@ export class Player extends Component {
         if (event.keyCode !== KeyCode.KEY_A && event.keyCode !== KeyCode.KEY_D)
             return;
         this._speed = 0;
-        this.anim.play("PlayerIdle");
+        if (this.canPlayNow())
+            this.anim.play("PlayerIdle");
         this._isRunning = false;
     }
 
@@ -106,6 +108,10 @@ export class Player extends Component {
             const a = this.sprite.color.a === 255 ? 0 : 255;
             this.sprite.color = new Color(255, 255, 255, a);
         }, 0.1, 9);
+    }
+
+    canPlayNow() {
+        return this._attackTimer <= 0;
     }
 }
 
