@@ -12,7 +12,9 @@ import {
     Contact2DType,
     Collider2D,
     Sprite,
-    Color
+    Color,
+    RigidBody2D,
+    Vec2
 } from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
 
@@ -30,12 +32,15 @@ export class Player extends Component {
     sprite: Sprite = null;
     @property({type: AudioClip})
     dieMusic: AudioClip = null;
+    @property({type: RigidBody2D})
+    rigidBody: RigidBody2D = null;
 
     private _hp = 5;
     private _moveDir = 1;
     private _speed = 0;
     private _attackTimer = 0;
     private _isRunning = false;
+    private _jumpCount = 1;
 
     onLoad() {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -66,6 +71,12 @@ export class Player extends Component {
     onKeyDown(event: EventKeyboard) {
         if (this._hp <= 0)
             return;
+        if (event.keyCode === KeyCode.KEY_K && this._jumpCount > 0) {
+            this._jumpCount--;
+            this.anim.play("PlayerJump");
+            this.rigidBody.linearVelocity = new Vec2(0, 10);
+            return;
+        }
         if (event.keyCode === KeyCode.KEY_J && this._attackTimer <= 0) {
             this._attackTimer = 1;
             this.anim.play("PlayerAttack");
@@ -95,6 +106,12 @@ export class Player extends Component {
     }
 
     onHit(self: Collider2D, other: Collider2D) {
+        if (other.node.name === "Down") {
+            this._jumpCount = 1;
+            const state = this.anim.getState("PlayerJump");
+            if (state.isPlaying)
+                this.anim.play(this._isRunning ? "PlayerRun" : "PlayerIdle");
+        }
         if (other.node.name !== "EnemyPrefab" || this._hp <= 0)
             return;
         AudioManager.inst.playOneShot(this.dieMusic, 1);

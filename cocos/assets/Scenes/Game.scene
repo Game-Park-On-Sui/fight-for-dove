@@ -1314,6 +1314,9 @@
       "__uuid__": "1d93cae7-7c36-43ce-ba2a-63c9f4706090",
       "__expectedType__": "cc.AudioClip"
     },
+    "rigidBody": {
+      "__id__": 31
+    },
     "_id": "edVZc847NCFZ481pz8rOxs"
   },
   {
