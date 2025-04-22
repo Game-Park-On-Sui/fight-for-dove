@@ -1,4 +1,19 @@
-import {_decorator, Component, Animation, input, Input, EventKeyboard, KeyCode, Vec3, AudioClip} from 'cc';
+import {
+    _decorator,
+    Component,
+    Animation,
+    input,
+    Input,
+    EventKeyboard,
+    KeyCode,
+    Vec3,
+    AudioClip,
+    PolygonCollider2D,
+    Contact2DType,
+    Collider2D,
+    Sprite,
+    Color
+} from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
 
 const {ccclass, property} = _decorator;
@@ -9,7 +24,14 @@ export class Player extends Component {
     anim: Animation = null;
     @property({type: AudioClip})
     attackMusic: AudioClip = null;
+    @property({type: PolygonCollider2D})
+    collider: PolygonCollider2D = null;
+    @property({type: Sprite})
+    sprite: Sprite = null;
+    @property({type: AudioClip})
+    dieMusic: AudioClip = null;
 
+    private _hp = 5;
     private _moveDir = 1;
     private _speed = 0;
     private _attackTimer = 0;
@@ -18,9 +40,12 @@ export class Player extends Component {
     onLoad() {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        this.collider.on(Contact2DType.BEGIN_CONTACT, this.onHit, this);
     }
 
     update(deltaTime: number) {
+        if (this._hp <= 0)
+            return;
         if (this._attackTimer > 0) {
             this._attackTimer -= deltaTime;
             return;
@@ -35,9 +60,12 @@ export class Player extends Component {
     onDestroy() {
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+        this.collider.off(Contact2DType.BEGIN_CONTACT, this.onHit, this);
     }
 
     onKeyDown(event: EventKeyboard) {
+        if (this._hp <= 0)
+            return;
         if (event.keyCode === KeyCode.KEY_J && this._attackTimer <= 0) {
             this._attackTimer = 1;
             this.anim.play("PlayerAttack");
@@ -55,11 +83,29 @@ export class Player extends Component {
     }
 
     onKeyUp(event: EventKeyboard) {
+        if (this._hp <= 0)
+            return;
         if (event.keyCode !== KeyCode.KEY_A && event.keyCode !== KeyCode.KEY_D)
             return;
         this._speed = 0;
         this.anim.play("PlayerIdle");
         this._isRunning = false;
+    }
+
+    onHit(self: Collider2D, other: Collider2D) {
+        if (other.node.name !== "EnemyPrefab" || this._hp <= 0)
+            return;
+        AudioManager.inst.playOneShot(this.dieMusic, 1);
+        self.group = 1;
+        if (--this._hp <= 0) {
+            this.anim.play("PlayerDie");
+            return;
+        }
+        this.scheduleOnce(() => self.group = 2, 1);
+        this.schedule(() => {
+            const a = this.sprite.color.a === 255 ? 0 : 255;
+            this.sprite.color = new Color(255, 255, 255, a);
+        }, 0.1, 9);
     }
 }
 
