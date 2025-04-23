@@ -142,6 +142,9 @@
     "waitingUI": {
       "__id__": 339
     },
+    "inGamePropsManager": {
+      "__id__": 147
+    },
     "timeLabel": {
       "__id__": 628
     },

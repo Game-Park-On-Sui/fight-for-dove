@@ -3,6 +3,7 @@ import {AudioManager} from "db://assets/Scripts/AudioManager";
 import {EnemyManager} from "db://assets/Scripts/EnemyManager";
 import {UserInfoType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
 import {TsrpcManager} from "db://assets/Scripts/TsrpcManager";
+import {PropsManager} from "db://assets/Scripts/PropsManager";
 
 const {ccclass, property} = _decorator;
 
@@ -113,6 +114,9 @@ export class GameManager extends Component {
     }
 
     // ------ game info ------
+    @property({type: PropsManager})
+    inGamePropsManager: PropsManager = null;
+
     private _curLevel = 0;
     private _newGameCount = 0;
 
@@ -120,6 +124,7 @@ export class GameManager extends Component {
         this._curLevel = info.fields.value.fields.game_state === "Ready" ? 1 : (info.fields.value.fields.game_state === "End" ? -1 : info.fields.value.fields.game_state.length + 1);
         this._newGameCount = Number(info.fields.value.fields.can_new_game_amount);
         this.showUI(info.fields.value.fields.game_state === "Ready" ? 0 : (info.fields.value.fields.game_state === "End" ? 2 : 1));
+        this.inGamePropsManager.init(info.fields.value.fields.in_game_props);
     }
 
     private _gameTimer = 0;
