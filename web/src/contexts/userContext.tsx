@@ -2,7 +2,7 @@
 
 import {createContext, ReactNode, useCallback, useEffect, useState} from "react";
 import {useCurrentAccount, useResolveSuiNSName} from "@mysten/dapp-kit";
-import {getGameCount, getGP, getNFTID} from "@/libs/contracts";
+import {getGameCount, getGP, getNFTID, PropsType} from "@/libs/contracts";
 
 type UserInfoType = {
     account: string | null | undefined,
@@ -13,6 +13,7 @@ type UserInfoType = {
     refreshInfo: () => void,
     gameState: string | null | undefined,
     nftID: string | null | undefined,
+    props: PropsType[]
 }
 
 export const UserContext = createContext<UserInfoType>({
@@ -23,7 +24,8 @@ export const UserContext = createContext<UserInfoType>({
     gameCount: undefined,
     refreshInfo: () => {},
     gameState: undefined,
-    nftID: undefined
+    nftID: undefined,
+    props: []
 });
 
 export default function UserContextProvider({children}: {children: ReactNode}) {
@@ -32,6 +34,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
     const [gp, setGp] = useState<string>("");
     const [gameState, setGameState] = useState<string>("");
     const [gameCount, setGameCount] = useState<string>("");
+    const [props, setProps] = useState<PropsType[]>([]);
     const [nftID, setNftID] = useState<string | null | undefined>("");
 
     const refreshInfo = useCallback(() => {
@@ -39,6 +42,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
         getGameCount(account?.address).then(userInfo => {
             setGameState(userInfo.fields.value.fields.game_state);
             setGameCount(userInfo.fields.value.fields.can_new_game_amount);
+            setProps(userInfo.fields.value.fields.in_game_props);
         });
         getNFTID(account?.address, null).then(nftID => setNftID(nftID));
     }, [account]);
@@ -57,6 +61,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
             refreshInfo,
             gameState,
             nftID,
+            props,
         }}>
             {children}
         </UserContext.Provider>

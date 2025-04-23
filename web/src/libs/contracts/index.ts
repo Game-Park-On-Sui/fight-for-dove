@@ -24,13 +24,34 @@ type FFDataType = {
     }
 }
 
+export type PropsType = {
+    fields: {
+        id: {
+            id: string
+        },
+        props_type: string,
+        quality: string,
+        image_url: string,
+        effects: {
+            fields: {
+                contents: {
+                    fields: {
+                        key: string,
+                        value: string
+                    }
+                }[]
+            }
+        }
+    }
+}
+
 type UserInfoType = {
     fields: {
         value: {
             fields: {
                 game_state: string,
                 can_new_game_amount: string,
-                in_game_props: any[]
+                in_game_props: PropsType[]
             }
         }
     }
@@ -128,3 +149,20 @@ export async function getNFTID(owner: string | null | undefined, cursor: string 
     const found = data.data.find(data => data.data?.type === `${networkConfig[network].variables.FFD.PackageID}::nft::FightForDoveNFT`);
     return found ? found.data?.objectId : (data.hasNextPage ? await getNFTID(owner, data.nextCursor) : undefined);
 }
+
+export const dropToNewGameTx = createBetterTxFactory<{
+    nft: string,
+    ids: string[]
+}>((tx, networkVariables, params) => {
+    tx.moveCall({
+        package: networkVariables.FFD.PackageID,
+        module: "data",
+        function: "ready_new_game",
+        arguments: [
+            tx.object(networkVariables.FFD.Data),
+            tx.object(params.nft),
+            tx.pure.vector("id", params.ids)
+        ]
+    });
+    return tx;
+});

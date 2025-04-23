@@ -125,6 +125,10 @@ export class GameManager extends Component {
         this._newGameCount = Number(info.fields.value.fields.can_new_game_amount);
         this.showUI(info.fields.value.fields.game_state === "Ready" ? 0 : (info.fields.value.fields.game_state === "End" ? 2 : 1));
         this.inGamePropsManager.init(info.fields.value.fields.in_game_props);
+        this.refreshOwnedProps();
+    }
+
+    refreshOwnedProps() {
     }
 
     private _gameTimer = 0;

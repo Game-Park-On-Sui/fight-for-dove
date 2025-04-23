@@ -3,7 +3,7 @@
 import {useBetterSignAndExecuteTransaction, useMediaSize} from "@/hooks";
 import "@/app/page.css"
 import {Info, RefreshCw} from "lucide-react";
-import {CustomSuiButton, ReadingInfo, Waiting} from "@/components";
+import {CustomSuiButton, ReadingInfo, Waiting, ViewProps} from "@/components";
 import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {UserContext} from "@/contexts";
 import {buyGameCountTx} from "@/libs/contracts";
@@ -15,6 +15,7 @@ export default function Home() {
     const [inputCount, setInputCount] = useState<string>("");
     const [timerID, setTimerID] = useState<number | NodeJS.Timeout>();
     const [isReadingInfo, setIsReadingInfo] = useState<boolean>(false);
+    const [isViewing, setIsViewing] = useState<boolean>(false);
 
     const changeInputCount = (e: ChangeEvent<HTMLInputElement>) => {
         const amount = e.target.value;
@@ -74,6 +75,16 @@ export default function Home() {
         }).onExecute();
     }
 
+    const isEndingGame = () => {
+        return userInfo.gameState === "End";
+    }
+
+    const handleClickViewProps = () => {
+        if (!isEndingGame())
+            return;
+        setIsViewing(true);
+    }
+
     return (
         <div style={{
             position: 'relative',
@@ -121,7 +132,8 @@ export default function Home() {
                             className={canBuyGameCount() ? "cursor-pointer text-[#196ae3] hover:text-[#35aaf7]" : "text-[#afb3b5]"}
                             onClick={handleClickBuyGameCount}>BuyGameCnt</span>
                     </div>
-                    <span className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]">ViewProps</span>
+                    <span className={isEndingGame() ? "cursor-pointer text-[#196ae3] hover:text-[#35aaf7]" : "text-[#afb3b5]"}
+                          onClick={handleClickViewProps}>ViewProps</span>
                     <div className="flex flex-col gap-2 items-center text-xs text-[#afb3b5]">
                         <span>GP: {userInfo.gp}</span>
                         <span>GameCount: {userInfo.gameCount}</span>
@@ -132,6 +144,7 @@ export default function Home() {
                 </div>
             </div>
             {isReadingInfo && <ReadingInfo setIsReadingInfo={setIsReadingInfo}/>}
+            {isViewing && <ViewProps setIsViewing={setIsViewing} setIsWaiting={setIsWaiting}/>}
             {isWaiting && <Waiting/>}
         </div>
     );
