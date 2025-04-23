@@ -1,4 +1,5 @@
 import {_decorator, Component, EditBox, Node, Label} from 'cc';
+import {TsrpcManager} from "db://assets/Scripts/TsrpcManager";
 
 const {ccclass, property} = _decorator;
 
@@ -37,10 +38,20 @@ export class Login extends Component {
     }
 
     handleClickConfirm() {
-        if (this.confirmLabel.string === "...")
+        const username = this.username.string;
+        const password = this.password.string;
+        const address = this.address.string;
+        if (!username || !password || !address || this.confirmLabel.string === "...")
             return;
-        this.startNode.active = true;
-        this.node.active = false;
+        this.confirmLabel.string = "...";
+        TsrpcManager.instance.login(username, password, address).then(ok => {
+            this.confirmLabel.string = "Confirm";
+            if (ok) {
+                this.writeInfo();
+                this.startNode.active = true;
+                this.node.active = false;
+            }
+        })
     }
 }
 
