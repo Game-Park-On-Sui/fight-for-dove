@@ -154,9 +154,14 @@ export class GameManager extends Component {
             this.timeLabel.string = "0";
             this.inGameUI.active = true;
             this.enemyManager.active = false;
-            TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
-                GameManager.instance.refreshGameInfo(info);
-            })
+            this.waitingUI.active = true;
+            TsrpcManager.instance.generateProps(localStorage.getItem("address")).then(success => {
+                if (!success)
+                    return;
+                TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
+                    GameManager.instance.refreshGameInfo(info);
+                });
+            });
         }
     }
 }

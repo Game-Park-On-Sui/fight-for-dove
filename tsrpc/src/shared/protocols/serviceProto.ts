@@ -1,6 +1,7 @@
 import { ServiceProto } from 'tsrpc-proto';
 import { ReqDropAll, ResDropAll } from './PtlDropAll';
 import { ReqEndGame, ResEndGame } from './PtlEndGame';
+import { ReqGenerateProps, ResGenerateProps } from './PtlGenerateProps';
 import { ReqGetGameInfo, ResGetGameInfo } from './PtlGetGameInfo';
 import { ReqLogin, ResLogin } from './PtlLogin';
 import { ReqNewGame, ResNewGame } from './PtlNewGame';
@@ -15,6 +16,10 @@ export interface ServiceType {
         "EndGame": {
             req: ReqEndGame,
             res: ResEndGame
+        },
+        "GenerateProps": {
+            req: ReqGenerateProps,
+            res: ResGenerateProps
         },
         "GetGameInfo": {
             req: ReqGetGameInfo,
@@ -39,7 +44,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 3,
+    "version": 4,
     "services": [
         {
             "id": 0,
@@ -49,6 +54,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
         {
             "id": 1,
             "name": "EndGame",
+            "type": "api"
+        },
+        {
+            "id": 6,
+            "name": "GenerateProps",
             "type": "api"
         },
         {
@@ -110,6 +120,30 @@ export const serviceProto: ServiceProto<ServiceType> = {
             ]
         },
         "PtlEndGame/ResEndGame": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "success",
+                    "type": {
+                        "type": "Boolean"
+                    }
+                }
+            ]
+        },
+        "PtlGenerateProps/ReqGenerateProps": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "user",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlGenerateProps/ResGenerateProps": {
             "type": "Interface",
             "properties": [
                 {
@@ -208,7 +242,112 @@ export const serviceProto: ServiceProto<ServiceType> = {
                                                         "type": {
                                                             "type": "Array",
                                                             "elementType": {
-                                                                "type": "Any"
+                                                                "type": "Reference",
+                                                                "target": "PtlGetGameInfo/PropsType"
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "PtlGetGameInfo/PropsType": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "fields",
+                    "type": {
+                        "type": "Interface",
+                        "properties": [
+                            {
+                                "id": 0,
+                                "name": "id",
+                                "type": {
+                                    "type": "Interface",
+                                    "properties": [
+                                        {
+                                            "id": 0,
+                                            "name": "id",
+                                            "type": {
+                                                "type": "String"
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "id": 1,
+                                "name": "props_type",
+                                "type": {
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "id": 2,
+                                "name": "quality",
+                                "type": {
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "id": 3,
+                                "name": "image_url",
+                                "type": {
+                                    "type": "String"
+                                }
+                            },
+                            {
+                                "id": 4,
+                                "name": "effects",
+                                "type": {
+                                    "type": "Interface",
+                                    "properties": [
+                                        {
+                                            "id": 0,
+                                            "name": "fields",
+                                            "type": {
+                                                "type": "Interface",
+                                                "properties": [
+                                                    {
+                                                        "id": 0,
+                                                        "name": "contents",
+                                                        "type": {
+                                                            "type": "Array",
+                                                            "elementType": {
+                                                                "type": "Interface",
+                                                                "properties": [
+                                                                    {
+                                                                        "id": 0,
+                                                                        "name": "fields",
+                                                                        "type": {
+                                                                            "type": "Interface",
+                                                                            "properties": [
+                                                                                {
+                                                                                    "id": 0,
+                                                                                    "name": "key",
+                                                                                    "type": {
+                                                                                        "type": "String"
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "id": 1,
+                                                                                    "name": "value",
+                                                                                    "type": {
+                                                                                        "type": "String"
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        }
+                                                                    }
+                                                                ]
                                                             }
                                                         }
                                                     }

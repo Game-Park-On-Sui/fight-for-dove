@@ -54,4 +54,10 @@ export class TsrpcManager {
             user
         })).res.success;
     }
+
+    async generateProps(user: string) {
+        return (await this._apiClient.callApi("GenerateProps", {
+            user
+        })).res.success;
+    }
 }
