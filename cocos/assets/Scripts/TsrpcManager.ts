@@ -30,4 +30,28 @@ export class TsrpcManager {
             user
         })).res.info;
     }
+
+    async newGame(user: string) {
+        return (await this._apiClient.callApi("NewGame", {
+            user
+        })).res.success;
+    }
+
+    async nextLevel(user: string) {
+        return (await this._apiClient.callApi("NextLevel", {
+            user
+        })).res.success;
+    }
+
+    async endGame(user: string) {
+        return (await this._apiClient.callApi("EndGame", {
+            user
+        })).res.success;
+    }
+
+    async dropAll(user: string) {
+        return (await this._apiClient.callApi("DropAll", {
+            user
+        })).res.success;
+    }
 }

@@ -1,9 +1,21 @@
 import { ServiceProto } from 'tsrpc-proto';
+import { ReqDropAll, ResDropAll } from './PtlDropAll';
+import { ReqEndGame, ResEndGame } from './PtlEndGame';
 import { ReqGetGameInfo, ResGetGameInfo } from './PtlGetGameInfo';
 import { ReqLogin, ResLogin } from './PtlLogin';
+import { ReqNewGame, ResNewGame } from './PtlNewGame';
+import { ReqNextLevel, ResNextLevel } from './PtlNextLevel';
 
 export interface ServiceType {
     api: {
+        "DropAll": {
+            req: ReqDropAll,
+            res: ResDropAll
+        },
+        "EndGame": {
+            req: ReqEndGame,
+            res: ResEndGame
+        },
         "GetGameInfo": {
             req: ReqGetGameInfo,
             res: ResGetGameInfo
@@ -11,6 +23,14 @@ export interface ServiceType {
         "Login": {
             req: ReqLogin,
             res: ResLogin
+        },
+        "NewGame": {
+            req: ReqNewGame,
+            res: ResNewGame
+        },
+        "NextLevel": {
+            req: ReqNextLevel,
+            res: ResNextLevel
         }
     },
     msg: {
@@ -23,16 +43,84 @@ export const serviceProto: ServiceProto<ServiceType> = {
     "services": [
         {
             "id": 0,
-            "name": "GetGameInfo",
+            "name": "DropAll",
             "type": "api"
         },
         {
             "id": 1,
+            "name": "EndGame",
+            "type": "api"
+        },
+        {
+            "id": 2,
+            "name": "GetGameInfo",
+            "type": "api"
+        },
+        {
+            "id": 3,
             "name": "Login",
+            "type": "api"
+        },
+        {
+            "id": 4,
+            "name": "NewGame",
+            "type": "api"
+        },
+        {
+            "id": 5,
+            "name": "NextLevel",
             "type": "api"
         }
     ],
     "types": {
+        "PtlDropAll/ReqDropAll": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "user",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlDropAll/ResDropAll": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "success",
+                    "type": {
+                        "type": "Boolean"
+                    }
+                }
+            ]
+        },
+        "PtlEndGame/ReqEndGame": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "user",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlEndGame/ResEndGame": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "success",
+                    "type": {
+                        "type": "Boolean"
+                    }
+                }
+            ]
+        },
         "PtlGetGameInfo/ReqGetGameInfo": {
             "type": "Interface",
             "properties": [
@@ -169,6 +257,54 @@ export const serviceProto: ServiceProto<ServiceType> = {
                     "name": "state",
                     "type": {
                         "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlNewGame/ReqNewGame": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "user",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlNewGame/ResNewGame": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "success",
+                    "type": {
+                        "type": "Boolean"
+                    }
+                }
+            ]
+        },
+        "PtlNextLevel/ReqNextLevel": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "user",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlNextLevel/ResNextLevel": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "success",
+                    "type": {
+                        "type": "Boolean"
                     }
                 }
             ]

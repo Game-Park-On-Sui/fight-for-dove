@@ -123,6 +123,7 @@ export class Player extends Component {
         self.group = 1;
         if (--this._hp <= 0) {
             this.anim.play("PlayerDie");
+            GameManager.instance.gameOver();
             return;
         }
         this.scheduleOnce(() => self.group = 2, 1);
