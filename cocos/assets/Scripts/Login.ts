@@ -1,5 +1,6 @@
-import {_decorator, Component, EditBox, Node, Label} from 'cc';
+import {_decorator, Component, EditBox, Label} from 'cc';
 import {TsrpcManager} from "db://assets/Scripts/TsrpcManager";
+import {GameManager} from "db://assets/Scripts/GameManager";
 
 const {ccclass, property} = _decorator;
 
@@ -13,8 +14,6 @@ export class Login extends Component {
     address: EditBox = null;
     @property({type: Label})
     confirmLabel: Label = null;
-    @property({type: Node})
-    startNode: Node = null;
 
     onLoad() {
         this.readInfo();
@@ -45,12 +44,16 @@ export class Login extends Component {
             return;
         this.confirmLabel.string = "...";
         TsrpcManager.instance.login(username, password, address).then(ok => {
-            this.confirmLabel.string = "Confirm";
-            if (ok) {
-                this.writeInfo();
-                this.startNode.active = true;
-                this.node.active = false;
+            if (!ok) {
+                this.confirmLabel.string = "Confirm";
+                return;
             }
+            this.writeInfo();
+            TsrpcManager.instance.getGameInfo(address).then(info => {
+                GameManager.instance.refreshGameInfo(info);
+                this.confirmLabel.string = "Confirm";
+                this.node.active = false;
+            })
         })
     }
 }

@@ -1,6 +1,7 @@
 import {_decorator, Component, Node, NodePool, Prefab, instantiate, AudioClip} from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
 import {EnemyManager} from "db://assets/Scripts/EnemyManager";
+import {UserInfoType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
 
 const {ccclass, property} = _decorator;
 
@@ -67,15 +68,29 @@ export class GameManager extends Component {
     enemyManager: Node = null;
 
     handleClickStartGame() {
-        this.startUI.active = false;
-        this.inGameUI.active = false;
-        this.endUI.active = false;
+        this.showUI(-1);
         this.enemyManager.active = true;
         this.enemyManager.getComponent(EnemyManager).clearAllNodes();
         this.scheduleOnce(() => {
             this.inGameUI.active = true;
             this.enemyManager.active = false;
         }, 10);
+    }
+
+    showUI(idx: number) {
+        this.startUI.active = idx === 0;
+        this.inGameUI.active = idx === 1;
+        this.endUI.active = idx === 2;
+    }
+
+    // ------ game info ------
+    private _curLevel = 0;
+    private _newGameCount = 0;
+
+    refreshGameInfo(info: UserInfoType) {
+        this._curLevel = info.fields.value.fields.game_state === "Ready" ? 1 : info.fields.value.fields.game_state.length + 1;
+        this._newGameCount = Number(info.fields.value.fields.can_new_game_amount);
+        this.showUI(info.fields.value.fields.game_state === "Ready" ? 0 : (info.fields.value.fields.game_state === "End" ? 2 : 1));
     }
 }
 

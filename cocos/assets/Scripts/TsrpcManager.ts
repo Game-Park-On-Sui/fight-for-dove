@@ -24,4 +24,10 @@ export class TsrpcManager {
         });
         return res.res.state === "success";
     }
+
+    async getGameInfo(user: string | null | undefined) {
+        return (await this._apiClient.callApi("GetGameInfo", {
+            user
+        })).res.info;
+    }
 }
