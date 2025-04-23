@@ -61,7 +61,8 @@ export default function Home() {
             return;
         await buyGameCount({
             sender: userInfo.account!,
-            count: Number(inputCount)
+            count: Number(inputCount),
+            nftID: userInfo.nftID
         }).beforeExecute(() => {
             setIsWaiting(true);
         }).onError(err => {

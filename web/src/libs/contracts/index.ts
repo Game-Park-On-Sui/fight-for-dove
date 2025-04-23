@@ -87,9 +87,17 @@ export async function getGameCount(user: string | undefined) {
 
 export const buyGameCountTx = createBetterTxFactory<{
     sender: string,
-    count: number
+    count: number,
+    nftID: string | null | undefined
 }>((tx, networkVariables, params) => {
     tx.setSender(params.sender);
+    if (!params.nftID) {
+        tx.moveCall({
+            package: networkVariables.FFD.PackageID,
+            module: "nft",
+            function: "mint_and_keep"
+        });
+    }
     tx.moveCall({
         package: networkVariables.FFD.PackageID,
         module: "data",
@@ -106,3 +114,17 @@ export const buyGameCountTx = createBetterTxFactory<{
     });
     return tx;
 });
+
+export async function getNFTID(owner: string | null | undefined, cursor: string | null | undefined): Promise<string | null | undefined> {
+    if (!owner)
+        return undefined;
+    const data = await suiClient.getOwnedObjects({
+        owner,
+        cursor,
+        options: {
+            showType: true
+        }
+    });
+    const found = data.data.find(data => data.data?.type === `${networkConfig[network].variables.FFD.PackageID}::nft::FightForDoveNFT`);
+    return found ? found.data?.objectId : (data.hasNextPage ? await getNFTID(owner, data.nextCursor) : undefined);
+}

@@ -2,7 +2,7 @@
 
 import {createContext, ReactNode, useCallback, useEffect, useState} from "react";
 import {useCurrentAccount, useResolveSuiNSName} from "@mysten/dapp-kit";
-import {getGameCount, getGP} from "@/libs/contracts";
+import {getGameCount, getGP, getNFTID} from "@/libs/contracts";
 
 type UserInfoType = {
     account: string | null | undefined,
@@ -12,6 +12,7 @@ type UserInfoType = {
     gameCount: string | null | undefined,
     refreshInfo: () => void,
     gameState: string | null | undefined,
+    nftID: string | null | undefined,
 }
 
 export const UserContext = createContext<UserInfoType>({
@@ -21,7 +22,8 @@ export const UserContext = createContext<UserInfoType>({
     gp: undefined,
     gameCount: undefined,
     refreshInfo: () => {},
-    gameState: undefined
+    gameState: undefined,
+    nftID: undefined
 });
 
 export default function UserContextProvider({children}: {children: ReactNode}) {
@@ -30,6 +32,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
     const [gp, setGp] = useState<string>("");
     const [gameState, setGameState] = useState<string>("");
     const [gameCount, setGameCount] = useState<string>("");
+    const [nftID, setNftID] = useState<string | null | undefined>("");
 
     const refreshInfo = useCallback(() => {
         getGP(account?.address).then(gp => setGp(gp));
@@ -37,6 +40,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
             setGameState(userInfo.fields.value.fields.game_state);
             setGameCount(userInfo.fields.value.fields.can_new_game_amount);
         });
+        getNFTID(account?.address, null).then(nftID => setNftID(nftID));
     }, [account]);
 
     useEffect(() => {
@@ -52,6 +56,7 @@ export default function UserContextProvider({children}: {children: ReactNode}) {
             gameCount,
             refreshInfo,
             gameState,
+            nftID,
         }}>
             {children}
         </UserContext.Provider>
