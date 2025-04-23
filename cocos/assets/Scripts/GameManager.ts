@@ -67,10 +67,13 @@ export class GameManager extends Component {
     endUI: Node = null;
     @property({type: Node})
     enemyManager: Node = null;
+    @property({type: Node})
+    waitingUI: Node = null;
 
     handleClickStartGame() {
         if (this._newGameCount < 1 && this._curLevel === 1)
             return;
+        this.waitingUI.active = true;
         if (this._curLevel === 1) {
             TsrpcManager.instance.newGame(localStorage.getItem("address")).then(success => {
                 if (!success)
@@ -106,6 +109,7 @@ export class GameManager extends Component {
         this.startUI.active = idx === 0;
         this.inGameUI.active = idx === 1;
         this.endUI.active = idx === 2;
+        this.waitingUI.active = false;
     }
 
     // ------ game info ------
