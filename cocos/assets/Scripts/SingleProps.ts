@@ -1,11 +1,14 @@
-import {_decorator, Component, Sprite, Widget, Node} from 'cc';
+import {_decorator, Component, Sprite, Widget, Node, SpriteFrame} from 'cc';
 import {PropsType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
 import {GameManager} from "db://assets/Scripts/GameManager";
 
-const {ccclass} = _decorator;
+const {ccclass, property} = _decorator;
 
 @ccclass('SingleProps')
 export class SingleProps extends Component {
+    @property({type: SpriteFrame})
+    frames: SpriteFrame[] = [];
+
     private _propsID = "";
     private _propsType = "";
     private _quality = "";
@@ -48,6 +51,20 @@ export class SingleProps extends Component {
         this._widget.left = left;
         this._isChosen = GameManager.instance.checkIfEquipped(this._propsID);
         this._sprite.grayscale = !this._isChosen;
+        const idx = this.getFrameIdx(props.fields.props_type);
+        this._sprite.spriteFrame = this.frames[idx];
+    }
+
+    getFrameIdx(type: string) {
+        if (type === "blood")
+            return 0;
+        if (type === "attack")
+            return 1;
+        if (type === "criticalHitRate" || type === "criticalDamage")
+            return 2;
+        if (type === "moveSpeed")
+            return 3;
+        return 4;
     }
 
     handleClickProps() {

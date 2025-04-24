@@ -189,6 +189,32 @@
     "__prefab": {
       "__id__": 9
     },
+    "frames": [
+      {
+        "__uuid__": "2d19cc09-26fd-424f-a647-9667bf0f8889@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "20144cc0-1606-4a9a-afdd-1854a7e249ac@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "1f0cd38e-2d0d-4f59-9ee8-47acfa9aae47@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "ebe421f6-4731-4140-888f-d4c90511f9e5@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "e85b6520-59e1-460c-945c-389fed6b0ac9@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      },
+      {
+        "__uuid__": "67c10755-bf81-45bf-a795-d348bc68ba1b@f9941",
+        "__expectedType__": "cc.SpriteFrame"
+      }
+    ],
     "_id": ""
   },
   {
