@@ -101,21 +101,31 @@ export class GameManager extends Component {
     enemyManager: Node = null;
     @property({type: Node})
     waitingUI: Node = null;
+    @property({type: Node})
+    errorUI: Node = null;
 
     handleClickStartGame() {
-        if (this._newGameCount < 1 && this._curLevel === 1)
+        if (this._newGameCount < 1 && this._curLevel === 1) {
+            GameManager.instance.showError();
             return;
+        }
         this.waitingUI.active = true;
         if (this._curLevel === 1) {
             TsrpcManager.instance.newGame(localStorage.getItem("address")).then(success => {
-                if (!success)
+                if (!success) {
+                    this.waitingUI.active = false;
+                    GameManager.instance.showError();
                     return;
+                }
                 this.enterGame();
             });
         } else if (this._curLevel > 0) {
             TsrpcManager.instance.nextLevel(localStorage.getItem("address")).then(success => {
-                if (!success)
+                if (!success) {
+                    this.waitingUI.active = false;
+                    GameManager.instance.showError();
                     return;
+                }
                 this.enterGame();
             });
         } else {
@@ -127,8 +137,11 @@ export class GameManager extends Component {
                     return;
                 }
                 TsrpcManager.instance.dropAll(localStorage.getItem("address")).then(success => {
-                    if (!success)
+                    if (!success) {
+                        this.waitingUI.active = false;
+                        GameManager.instance.showError();
                         return;
+                    }
                     TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
                         GameManager.instance.refreshGameInfo(info);
                     });
@@ -151,6 +164,11 @@ export class GameManager extends Component {
         this.inGameUI.active = idx === 1;
         this.endUI.active = idx === 2;
         this.waitingUI.active = false;
+    }
+
+    showError() {
+        this.errorUI.active = true;
+        this.scheduleOnce(() => this.errorUI.active = false, 3);
     }
 
     // ------ game info ------
@@ -318,8 +336,10 @@ export class GameManager extends Component {
         this.endUI.active = true;
         this.enemyManager.active = false;
         TsrpcManager.instance.endGame(localStorage.getItem("address")).then(success => {
-            if (!success)
+            if (!success) {
+                this.errorUI.active = true;
                 return;
+            }
             TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
                 GameManager.instance.refreshGameInfo(info);
             })
@@ -337,8 +357,11 @@ export class GameManager extends Component {
             this.enemyManager.active = false;
             this.waitingUI.active = true;
             TsrpcManager.instance.generateProps(localStorage.getItem("address")).then(success => {
-                if (!success)
+                if (!success) {
+                    this.waitingUI.active = false;
+                    this.errorUI.active = true;
                     return;
+                }
                 TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
                     GameManager.instance.refreshGameInfo(info);
                 });

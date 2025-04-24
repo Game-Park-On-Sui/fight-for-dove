@@ -45,6 +45,7 @@ export class Login extends Component {
         this.confirmLabel.string = "...";
         TsrpcManager.instance.login(username, password, address).then(ok => {
             if (!ok) {
+                GameManager.instance.showError();
                 this.confirmLabel.string = "Confirm";
                 return;
             }
