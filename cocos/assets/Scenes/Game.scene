@@ -1498,7 +1498,7 @@
     "_group": 1,
     "_type": 2,
     "_allowSleep": false,
-    "_gravityScale": 1,
+    "_gravityScale": 2.5,
     "_linearDamping": 0,
     "_angularDamping": 0,
     "_linearVelocity": {
@@ -17569,7 +17569,7 @@
       "b": 227,
       "a": 255
     },
-    "_string": "New",
+    "_string": "GameDrop",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 44.833333333333336,

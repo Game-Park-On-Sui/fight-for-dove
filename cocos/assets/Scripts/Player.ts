@@ -41,7 +41,7 @@ export class Player extends Component {
     private _speed = 0;
     private _attackTimer = 0;
     private _isRunning = false;
-    private _jumpCount = 1;
+    private _jumpCount = 2;
     private _playerInfo: PlayerInfoType = null;
 
     onLoad() {
@@ -50,12 +50,17 @@ export class Player extends Component {
         this.collider.on(Contact2DType.BEGIN_CONTACT, this.onHit, this);
     }
 
+    start() {
+        this.init();
+    }
+
     update(deltaTime: number) {
         if (this._hp <= 0)
             return;
         if (this._attackTimer > 0) {
             this._attackTimer -= deltaTime;
-            return;
+            if (this._attackTimer > 0.2)
+                return;
         }
         const pos = this.node.getPosition();
         let destX = pos.x + this._moveDir * this._speed * deltaTime;
@@ -76,17 +81,17 @@ export class Player extends Component {
         if (event.keyCode === KeyCode.KEY_K && this._jumpCount > 0) {
             this._jumpCount--;
             this.anim.play("PlayerJump");
-            this.rigidBody.linearVelocity = new Vec2(0, 10);
+            this.rigidBody.linearVelocity = new Vec2(0, 15);
             return;
         }
         if (event.keyCode === KeyCode.KEY_J && this._attackTimer <= 0) {
-            this._attackTimer = 1;
+            this._attackTimer = 0.8;
             this.anim.play("PlayerAttack");
             GameManager.instance.playerIsAttacking = true;
             this.scheduleOnce(() => {
                 this.anim.play(this._isRunning ? "PlayerRun" : "PlayerIdle");
                 GameManager.instance.playerIsAttacking = false;
-            }, this._attackTimer);
+            }, 0.6);
             this.scheduleOnce(() => AudioManager.inst.playOneShot(this.attackMusic, 1), 0.3);
             return;
         }
@@ -113,7 +118,7 @@ export class Player extends Component {
 
     onHit(self: Collider2D, other: Collider2D) {
         if (other.node.name === "Down") {
-            this._jumpCount = 1;
+            this._jumpCount = 2;
             const state = this.anim.getState("PlayerJump");
             if (state.isPlaying)
                 this.anim.play(this._isRunning ? "PlayerRun" : "PlayerIdle");

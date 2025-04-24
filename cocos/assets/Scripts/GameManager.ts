@@ -68,14 +68,14 @@ export class GameManager extends Component {
         attack: 3333,
         criticalHitRate: 0.03,
         criticalDamage: 1.2,
-        moveSpeed: 300
+        moveSpeed: 250
     }
     private _trulyPlayerInfo: PlayerInfoType = {
         hp: 6,
         attack: 3333,
         criticalHitRate: 0.03,
         criticalDamage: 1.2,
-        moveSpeed: 300
+        moveSpeed: 250
     }
 
     set playerIsAttacking(isAttacking: boolean) {
