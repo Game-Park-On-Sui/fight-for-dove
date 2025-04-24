@@ -1,5 +1,6 @@
-import {_decorator, Component, Sprite, Widget} from 'cc';
+import {_decorator, Component, Sprite, Widget, Node} from 'cc';
 import {PropsType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
+import {GameManager} from "db://assets/Scripts/GameManager";
 
 const {ccclass} = _decorator;
 
@@ -22,6 +23,16 @@ export class SingleProps extends Component {
         this._widget = this.getComponent(Widget);
     }
 
+    start() {
+        this.node.on(Node.EventType.MOUSE_ENTER, this.handleHover, this);
+        this.node.on(Node.EventType.MOUSE_LEAVE, this.handleLeave, this);
+    }
+
+    onDestroy() {
+        this.node.off(Node.EventType.MOUSE_ENTER, this.handleHover, this);
+        this.node.off(Node.EventType.MOUSE_LEAVE, this.handleLeave, this);
+    }
+
     init(props: PropsType, left: number) {
         this._propsID = props.fields.id.id;
         this._propsType = props.fields.props_type;
@@ -38,8 +49,25 @@ export class SingleProps extends Component {
     }
 
     handleClickProps() {
+        if (this._isChosen) {
+            this._sprite.grayscale = this._isChosen;
+            this._isChosen = !this._isChosen;
+            GameManager.instance.editEquippedIds(this._propsID, false);
+            return;
+        }
+        if (!GameManager.instance.checkIfEquipMore())
+            return;
         this._sprite.grayscale = this._isChosen;
         this._isChosen = !this._isChosen;
+        GameManager.instance.editEquippedIds(this._propsID, true);
+    }
+
+    handleHover() {
+        GameManager.instance.calcFakePlayerInfo(this._propsID, true);
+    }
+
+    handleLeave() {
+        GameManager.instance.calcFakePlayerInfo(this._propsID, false);
     }
 }
 

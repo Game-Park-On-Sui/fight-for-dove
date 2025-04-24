@@ -4,8 +4,17 @@ import {EnemyManager} from "db://assets/Scripts/EnemyManager";
 import {PropsType, UserInfoType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
 import {TsrpcManager} from "db://assets/Scripts/TsrpcManager";
 import {PropsManager} from "db://assets/Scripts/PropsManager";
+import {PlayerInfo} from "db://assets/Scripts/PlayerInfo";
 
 const {ccclass, property} = _decorator;
+
+export type PlayerInfoType = {
+    hp: number,
+    attack: number,
+    criticalHitRate: number,
+    criticalDamage: number,
+    moveSpeed: number
+}
 
 @ccclass('GameManager')
 export class GameManager extends Component {
@@ -50,6 +59,20 @@ export class GameManager extends Component {
 
     // ------ Player ------
     private _playerIsAttacking = false;
+    private _basicPlayerInfo: PlayerInfoType = {
+        hp: 6,
+        attack: 3333,
+        criticalHitRate: 0.03,
+        criticalDamage: 1.2,
+        moveSpeed: 300
+    }
+    private _trulyPlayerInfo: PlayerInfoType = {
+        hp: 6,
+        attack: 3333,
+        criticalHitRate: 0.03,
+        criticalDamage: 1.2,
+        moveSpeed: 300
+    }
 
     set playerIsAttacking(isAttacking: boolean) {
         this._playerIsAttacking = isAttacking;
@@ -122,9 +145,15 @@ export class GameManager extends Component {
     excellentPropsManager: PropsManager[] = [];
     @property({type: PropsManager})
     epicPropsManager: PropsManager[] = [];
+    @property({type: PlayerInfo})
+    playerInfoManager: PlayerInfo[] = [];
+    @property({type: PlayerInfo})
+    updatePlayerInfoManager: PlayerInfo[] = [];
 
     private _curLevel = 0;
     private _newGameCount = 0;
+    private _newProps: PropsType[] = []
+    private _inGameProps: PropsType[] = [];
     private _ownedProps: PropsType[] = [];
     private _canEquippedCount = 5;
     private _equippedIds: string[] = [];
@@ -135,7 +164,10 @@ export class GameManager extends Component {
         this.showUI(info.fields.value.fields.game_state === "Ready" ? 0 : (info.fields.value.fields.game_state === "End" ? 2 : 1));
         if (this.inGameUI.active)
             this.inGamePropsManager.init(info.fields.value.fields.in_game_props);
+        this._inGameProps = info.fields.value.fields.in_game_props;
         this.refreshOwnedProps();
+        this._trulyPlayerInfo = this.calcPlayerInfo(this._equippedIds);
+        this.showPlayerInfo(this._trulyPlayerInfo, true);
     }
 
     refreshOwnedProps() {
@@ -173,13 +205,66 @@ export class GameManager extends Component {
     }
 
     editEquippedIds(id: string, isAdd: boolean) {
-        if (!this.checkIfEquipMore())
-            return;
         if (isAdd)
             this._equippedIds.push(id);
         else
             this._equippedIds = this._equippedIds.filter(equippedId => equippedId !== id);
-        // TODO: exit player's data
+        this._trulyPlayerInfo = this.calcPlayerInfo(this._equippedIds);
+        this.showPlayerInfo(this._trulyPlayerInfo, true);
+    }
+
+    calcPlayerInfo(equippedIds: string[]) {
+        const playerInfo: PlayerInfoType = {
+            hp: this._basicPlayerInfo.hp,
+            attack: this._basicPlayerInfo.attack,
+            criticalHitRate: this._basicPlayerInfo.criticalHitRate,
+            criticalDamage: this._basicPlayerInfo.criticalDamage,
+            moveSpeed: this._basicPlayerInfo.moveSpeed
+        };
+        equippedIds.forEach(id => {
+            let props = this._ownedProps.find(props => props.fields.id.id === id);
+            if (!props)
+                props = this._inGameProps.find(props => props.fields.id.id === id);
+            if (!props)
+                props = this._newProps.find(props => props.fields.id.id === id);
+            props.fields.effects.fields.contents.forEach(effect => {
+                const key = effect.fields.key;
+                const value = Number(effect.fields.value) - 1000;
+                const ratio = 1 + value / 100;
+                if (key === "blood") {
+                    playerInfo.hp = Math.max(1, playerInfo.hp + value);
+                } else if (key === "attack") {
+                    playerInfo.attack = Math.max(1, Math.round(playerInfo.attack * ratio));
+                } else if (key === "criticalHitRate") {
+                    playerInfo.criticalHitRate = Math.max(1, Math.round(playerInfo.criticalHitRate * ratio));
+                } else if (key === "criticalDamage") {
+                    playerInfo.criticalDamage = Math.max(1, Math.round(playerInfo.criticalDamage * ratio));
+                } else if (key === "moveSpeed") {
+                    playerInfo.moveSpeed = Math.max(1, Math.round(playerInfo.moveSpeed * ratio));
+                }
+            })
+        });
+        return playerInfo;
+    }
+
+    calcFakePlayerInfo(id: string, isMoveIn: boolean) {
+        if (!isMoveIn) {
+            this.showPlayerInfo(this._trulyPlayerInfo, false);
+            return;
+        }
+        const found = this._equippedIds.find(equippedId => equippedId === id);
+        const fakePlayerInfo = this.calcPlayerInfo(found ? this._equippedIds.filter(equippedId => equippedId !== id) : this._equippedIds.concat(id));
+        this.showPlayerInfo(fakePlayerInfo, false);
+    }
+
+    showPlayerInfo(info: PlayerInfoType, isTruly: boolean) {
+        const idx = this.startUI.active ? 0 : (this.inGameUI.active ? 1 : -1);
+        if (idx === -1)
+            return;
+        if (isTruly)
+            this.playerInfoManager[idx].showInfo(info);
+        else
+            this.updatePlayerInfoManager[idx].showInfo(info);
     }
 
     private _gameTimer = 0;
