@@ -145,6 +145,30 @@
     "inGamePropsManager": {
       "__id__": 147
     },
+    "ordinaryPropsManager": [
+      {
+        "__id__": 458
+      },
+      {
+        "__id__": 176
+      }
+    ],
+    "excellentPropsManager": [
+      {
+        "__id__": 487
+      },
+      {
+        "__id__": 205
+      }
+    ],
+    "epicPropsManager": [
+      {
+        "__id__": 516
+      },
+      {
+        "__id__": 234
+      }
+    ],
     "timeLabel": {
       "__id__": 628
     },

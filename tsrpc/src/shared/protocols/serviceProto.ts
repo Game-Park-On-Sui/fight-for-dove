@@ -3,6 +3,7 @@ import { ReqDropAll, ResDropAll } from './PtlDropAll';
 import { ReqEndGame, ResEndGame } from './PtlEndGame';
 import { ReqGenerateProps, ResGenerateProps } from './PtlGenerateProps';
 import { ReqGetGameInfo, ResGetGameInfo } from './PtlGetGameInfo';
+import { ReqGetOwnedProps, ResGetOwnedProps } from './PtlGetOwnedProps';
 import { ReqLogin, ResLogin } from './PtlLogin';
 import { ReqNewGame, ResNewGame } from './PtlNewGame';
 import { ReqNextLevel, ResNextLevel } from './PtlNextLevel';
@@ -25,6 +26,10 @@ export interface ServiceType {
             req: ReqGetGameInfo,
             res: ResGetGameInfo
         },
+        "GetOwnedProps": {
+            req: ReqGetOwnedProps,
+            res: ResGetOwnedProps
+        },
         "Login": {
             req: ReqLogin,
             res: ResLogin
@@ -44,7 +49,7 @@ export interface ServiceType {
 }
 
 export const serviceProto: ServiceProto<ServiceType> = {
-    "version": 4,
+    "version": 5,
     "services": [
         {
             "id": 0,
@@ -64,6 +69,11 @@ export const serviceProto: ServiceProto<ServiceType> = {
         {
             "id": 2,
             "name": "GetGameInfo",
+            "type": "api"
+        },
+        {
+            "id": 7,
+            "name": "GetOwnedProps",
             "type": "api"
         },
         {
@@ -358,6 +368,34 @@ export const serviceProto: ServiceProto<ServiceType> = {
                                 }
                             }
                         ]
+                    }
+                }
+            ]
+        },
+        "PtlGetOwnedProps/ReqGetOwnedProps": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "owner",
+                    "type": {
+                        "type": "String"
+                    }
+                }
+            ]
+        },
+        "PtlGetOwnedProps/ResGetOwnedProps": {
+            "type": "Interface",
+            "properties": [
+                {
+                    "id": 0,
+                    "name": "props",
+                    "type": {
+                        "type": "Array",
+                        "elementType": {
+                            "type": "Reference",
+                            "target": "PtlGetGameInfo/PropsType"
+                        }
                     }
                 }
             ]

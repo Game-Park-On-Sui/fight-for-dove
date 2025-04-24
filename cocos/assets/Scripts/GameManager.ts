@@ -1,7 +1,7 @@
 import {_decorator, Component, Node, NodePool, Prefab, instantiate, AudioClip, Label} from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
 import {EnemyManager} from "db://assets/Scripts/EnemyManager";
-import {UserInfoType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
+import {PropsType, UserInfoType} from "db://assets/Scripts/tsrpc/protocols/PtlGetGameInfo";
 import {TsrpcManager} from "db://assets/Scripts/TsrpcManager";
 import {PropsManager} from "db://assets/Scripts/PropsManager";
 
@@ -116,19 +116,70 @@ export class GameManager extends Component {
     // ------ game info ------
     @property({type: PropsManager})
     inGamePropsManager: PropsManager = null;
+    @property({type: PropsManager})
+    ordinaryPropsManager: PropsManager[] = [];
+    @property({type: PropsManager})
+    excellentPropsManager: PropsManager[] = [];
+    @property({type: PropsManager})
+    epicPropsManager: PropsManager[] = [];
 
     private _curLevel = 0;
     private _newGameCount = 0;
+    private _ownedProps: PropsType[] = [];
+    private _canEquippedCount = 5;
+    private _equippedIds: string[] = [];
 
     refreshGameInfo(info: UserInfoType) {
         this._curLevel = info.fields.value.fields.game_state === "Ready" ? 1 : (info.fields.value.fields.game_state === "End" ? -1 : info.fields.value.fields.game_state.length + 1);
         this._newGameCount = Number(info.fields.value.fields.can_new_game_amount);
         this.showUI(info.fields.value.fields.game_state === "Ready" ? 0 : (info.fields.value.fields.game_state === "End" ? 2 : 1));
-        this.inGamePropsManager.init(info.fields.value.fields.in_game_props);
+        if (this.inGameUI.active)
+            this.inGamePropsManager.init(info.fields.value.fields.in_game_props);
         this.refreshOwnedProps();
     }
 
     refreshOwnedProps() {
+        TsrpcManager.instance.getOwnedProps(localStorage.getItem("address")).then(infos => {
+            const ordinaryProps: PropsType[] = [];
+            const excellentProps: PropsType[] = [];
+            const epicProps: PropsType[] = [];
+            infos.forEach(info => {
+                const quality = info.fields.quality;
+                if (quality === "ordinary")
+                    ordinaryProps.push(info);
+                else if (quality === "excellent")
+                    excellentProps.push(info);
+                else
+                    epicProps.push(info);
+            });
+            this.ordinaryPropsManager.forEach((manager, index) => {
+                if (index === 0 && this.startUI.active || index === 1 && this.inGameUI.active)
+                    manager.init(ordinaryProps);
+            });
+            this.excellentPropsManager.forEach((manager, index) => {
+                if (index === 0 && this.startUI.active || index === 1 && this.inGameUI.active)
+                    manager.init(excellentProps);
+            });
+            this.epicPropsManager.forEach((manager, index) => {
+                if (index === 0 && this.startUI.active || index === 1 && this.inGameUI.active)
+                    manager.init(epicProps);
+            });
+            this._ownedProps = infos;
+        })
+    }
+
+    checkIfEquipMore() {
+        return this._equippedIds.length < this._canEquippedCount;
+    }
+
+    editEquippedIds(id: string, isAdd: boolean) {
+        if (!this.checkIfEquipMore())
+            return;
+        if (isAdd)
+            this._equippedIds.push(id);
+        else
+            this._equippedIds = this._equippedIds.filter(equippedId => equippedId !== id);
+        // TODO: exit player's data
     }
 
     private _gameTimer = 0;

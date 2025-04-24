@@ -60,4 +60,10 @@ export class TsrpcManager {
             user
         })).res.success;
     }
+
+    async getOwnedProps(owner: string) {
+        return (await this._apiClient.callApi("GetOwnedProps", {
+            owner
+        })).res.props;
+    }
 }
