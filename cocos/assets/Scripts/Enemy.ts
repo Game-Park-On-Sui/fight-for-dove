@@ -163,8 +163,7 @@ export class Enemy extends Component {
     randomTargetPos() {
         const pos = this.node.getPosition();
         this._targetX = Math.random() * 500 * (Math.floor(Math.random() * 2) === 0 ? -1 : 1);
-        // 100 - 600
-        this._speed = 100;
+        this._speed = 100 + Math.round(Math.random() * Math.min(500, 50 * (GameManager.instance.curLevel - 1)));
         this._moveDir = this._targetX - pos.x > 0 ? 1 : -1;
         this._scale.x = this._moveDir === 1 ? 0.6 : -0.6;
         this.node.scale = this._scale;

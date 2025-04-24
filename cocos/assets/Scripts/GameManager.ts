@@ -121,12 +121,18 @@ export class GameManager extends Component {
         } else {
             this._equippedIds = [];
             this.calcPlayerInfo([]);
-            TsrpcManager.instance.dropAll(localStorage.getItem("address")).then(success => {
-                if (!success)
-                    return;
-                TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
+            TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
+                if (info.fields.value.fields.game_state === "Ready") {
                     GameManager.instance.refreshGameInfo(info);
-                })
+                    return;
+                }
+                TsrpcManager.instance.dropAll(localStorage.getItem("address")).then(success => {
+                    if (!success)
+                        return;
+                    TsrpcManager.instance.getGameInfo(localStorage.getItem("address")).then(info => {
+                        GameManager.instance.refreshGameInfo(info);
+                    });
+                });
             });
         }
     }
@@ -162,6 +168,9 @@ export class GameManager extends Component {
     updatePlayerInfoManager: PlayerInfo[] = [];
 
     private _curLevel = 0;
+    get curLevel() {
+        return this._curLevel;
+    }
     private _newGameCount = 0;
     private _newProps: PropsType[] = [];
     private _inGameProps: PropsType[] = [];
@@ -216,7 +225,7 @@ export class GameManager extends Component {
     }
 
     checkIfEquipped(id: string): boolean {
-        return this._equippedIds.find(equippedId => equippedId === id) !== null;
+        return this._equippedIds.find(equippedId => equippedId === id) !== undefined;
     }
 
     editEquippedIds(id: string, isAdd: boolean) {
