@@ -12,6 +12,12 @@ export default function FFDCard({info, editDropIds}: {
         editDropIds(info.fields.id.id, !dropped);
         setDropped(!dropped);
     }
+    const getRealValue = (type: string, value: number) => {
+        value -= 1000;
+        if (type === "blood")
+            return value.toString();
+        return value.toString() + "%";
+    }
 
     return (
         <div>
@@ -28,7 +34,7 @@ export default function FFDCard({info, editDropIds}: {
                     <div className="absolute flex flex-col items-start -bottom-32 left-0 w-full pl-1 text-[#afb3b5] group-hover:bottom-2 transition-all duration-750 text-lg">
                         {
                             info.fields.effects.fields.contents.map((content, index) =>
-                                <span key={index}>{`${content.fields.key}: ${content.fields.value}%`}</span>)
+                                <span key={index}>{`${content.fields.key}: ${getRealValue(info.fields.props_type, Number(content.fields.value))}`}</span>)
                         }
                     </div> ||
                     <div className="absolute w-full h-full left-0 top-0 text-[#041f4b] font-bold text-2xl text-center leading-36 transition-all duration-750">

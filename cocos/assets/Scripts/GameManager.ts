@@ -278,7 +278,7 @@ export class GameManager extends Component {
                 } else if (key === "attack") {
                     playerInfo.attack = playerInfo.attack * ratio;
                 } else if (key === "criticalHitRate") {
-                    playerInfo.criticalHitRate += value;
+                    playerInfo.criticalHitRate = playerInfo.criticalHitRate * ratio;
                 } else if (key === "criticalDamage") {
                     playerInfo.criticalDamage = playerInfo.criticalDamage * ratio;
                 } else if (key === "moveSpeed") {
@@ -288,8 +288,8 @@ export class GameManager extends Component {
         });
         playerInfo.hp = Math.max(1, playerInfo.hp);
         playerInfo.attack = Math.max(0, Math.round(playerInfo.attack));
-        playerInfo.criticalHitRate = Math.max(0, playerInfo.criticalHitRate);
-        playerInfo.criticalDamage = Math.max(1, Math.round(playerInfo.criticalDamage));
+        playerInfo.criticalHitRate = Math.max(0, Number(playerInfo.criticalHitRate.toFixed(2)));
+        playerInfo.criticalDamage = Math.max(1, Number(playerInfo.criticalDamage.toFixed(2)));
         playerInfo.moveSpeed = Math.max(100, Math.round(playerInfo.moveSpeed));
         return playerInfo;
     }
@@ -317,7 +317,7 @@ export class GameManager extends Component {
     calcDamage(): [number, boolean] {
         const damage = this._trulyPlayerInfo.attack;
         if (Math.random() <= this._trulyPlayerInfo.criticalHitRate)
-            return [damage + Math.round(damage * this._trulyPlayerInfo.criticalDamage), true];
+            return [Math.round(damage * this._trulyPlayerInfo.criticalDamage), true];
         return [damage, false];
     }
 
@@ -335,6 +335,7 @@ export class GameManager extends Component {
         this._gameOver = true;
         this.endUI.active = true;
         this.enemyManager.active = false;
+        this.waitingUI.active = true;
         TsrpcManager.instance.endGame(localStorage.getItem("address")).then(success => {
             if (!success) {
                 this.errorUI.active = true;

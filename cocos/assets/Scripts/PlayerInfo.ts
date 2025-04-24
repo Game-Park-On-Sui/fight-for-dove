@@ -19,8 +19,8 @@ export class PlayerInfo extends Component {
     showInfo(info: PlayerInfoType) {
         this.hp.string = info.hp.toString();
         this.attack.string = info.attack.toString();
-        this.criticalHitRate.string = info.criticalHitRate.toString();
-        this.criticalDamage.string = info.criticalDamage.toString();
+        this.criticalHitRate.string = (info.criticalHitRate * 100).toString() + "%";
+        this.criticalDamage.string = (info.criticalDamage * 100).toString() + "%";
         this.moveSpeed.string = info.moveSpeed.toString();
     }
 }
