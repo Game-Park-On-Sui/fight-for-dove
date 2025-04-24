@@ -92,12 +92,13 @@ export class Enemy extends Component {
             return;
         this._canBeAttacked = false;
         this.scheduleOnce(() => this._canBeAttacked = true, 1);
-        this.showDamage(3333);
+        const [damage, isCritical] = GameManager.instance.calcDamage();
+        this.showDamage(damage, isCritical ? 1 : 0);
         this.unschedule(this.onNormal);
         const config = this.colors[Math.floor(Math.random() * this.colors.length)]
         this._time = config.time;
         this._color = config.color;
-        if ((this._HP -= 3333) <= 0) {
+        if ((this._HP -= damage) <= 0) {
             this._speed = 0;
             this.onDeath();
             this.scheduleOnce(() => AudioManager.inst.playOneShot(this.dieMusic, 1), 1);

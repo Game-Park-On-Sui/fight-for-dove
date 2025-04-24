@@ -17,7 +17,7 @@ import {
     Vec2
 } from 'cc';
 import {AudioManager} from "db://assets/Scripts/AudioManager";
-import {GameManager} from "db://assets/Scripts/GameManager";
+import {GameManager, PlayerInfoType} from "db://assets/Scripts/GameManager";
 
 const {ccclass, property} = _decorator;
 
@@ -42,6 +42,7 @@ export class Player extends Component {
     private _attackTimer = 0;
     private _isRunning = false;
     private _jumpCount = 1;
+    private _playerInfo: PlayerInfoType = null;
 
     onLoad() {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -93,7 +94,7 @@ export class Player extends Component {
             return;
         this._moveDir = event.keyCode === KeyCode.KEY_A ? -1 : 1;
         this.node.scale = new Vec3(this._moveDir, 1, 1);
-        this._speed = 300;
+        this._speed = this._playerInfo.moveSpeed;
         if (this.canPlayNow())
             this.anim.play("PlayerRun");
         this._isRunning = true;
@@ -135,6 +136,11 @@ export class Player extends Component {
 
     canPlayNow() {
         return this._attackTimer <= 0;
+    }
+
+    init() {
+        this._playerInfo = GameManager.instance.trulyPlayerInfo;
+        this._hp = this._playerInfo.hp;
     }
 }
 

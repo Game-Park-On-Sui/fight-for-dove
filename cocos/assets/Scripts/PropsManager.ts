@@ -27,6 +27,7 @@ export class PropsManager extends Component {
 
     init(props: PropsType[]) {
         this.clearNodes();
+        props.sort((a, b) => a.fields.id.id < b.fields.id.id ? -1 : 1);
         const size = this._uiTransform.contentSize;
         this._uiTransform.setContentSize(math.size(110 * props.length, size.y));
         for (let i = 0; i < props.length; i++) {

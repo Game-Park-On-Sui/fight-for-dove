@@ -46,6 +46,8 @@ export class SingleProps extends Component {
         });
         this._widget.target = this.node.parent;
         this._widget.left = left;
+        this._isChosen = GameManager.instance.checkIfEquipped(this._propsID);
+        this._sprite.grayscale = !this._isChosen;
     }
 
     handleClickProps() {
