@@ -25,35 +25,31 @@ export default function ReadingInfo({setIsReadingInfo}: {setIsReadingInfo: Dispa
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">3. </b>
-                        Log in to the game with your account, and by default you can choose to play in endless mode.
+                        Log in to the game with your account.
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">4. </b>
-                        Click <b className="text-[#196ae3]">NewGame</b> to get an NFT that stores your game data, including the number of steps you can advance. (One NFT contains up to two separate games)
+                        In order to start playing, you need to <b className="text-[#196ae3]">BuyGameCnt</b> first.(1 GameCnt = 10 $GP)
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">5. </b>
-                        During the game, you can choose between the two tiles in front of your character, and each choice will consume one <b className="text-[#196ae3]">Step</b>.
+                        In the game, use <b className="text-[#196ae3]">A/D</b> to move, <b className="text-[#196ae3]">J</b> to attack, and <b className="text-[#196ae3]">K</b> to jump. Your goal is to survive.
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">6. </b>
-                        When your choice is safe, or successfully reaches the treasure chest, you will receive <b className="text-[#196ae3]">$GP</b> as a reward.
+                        Each time you pass a level, you will get props <b className="text-[#196ae3]">randomly</b>, which can be used to strengthen yourself. You can carry <b className="text-[#196ae3]">up to five props</b> at the same time.
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">7. </b>
-                        The <b className="text-[#196ae3]">ClearData</b> option will directly destroy your NFT, but you can directly receive a portion of the final reward of the unfinished game.
+                        The game ends when you die. You can directly <b className="text-[#196ae3]">discard all</b> the props obtained in this round, or you can <b className="text-[#196ae3]">keep some</b> props permanently.
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">8. </b>
-                        Another option for dealing with NFT: you can put it on the <b className="text-[#196ae3]">Market</b>.
+                        Permanently retained props can <b className="text-[#196ae3]">be carried</b> in future games or <b className="text-[#196ae3]">sold</b> on the <b className="text-[#196ae3]">Market</b>.
                     </p>
                     <p>
                         <b className="text-[#0a0e0f]">9. </b>
-                        If you already have NFT in your account when you purchase in <b className="text-[#196ae3]">Market</b>, your original NFT will be cleared according to the rules before you can make the purchase.
-                    </p>
-                    <p>
-                        <b className="text-[#0a0e0f]">10. </b>
-                        <b className="text-[#196ae3]">BuySteps</b> and enjoy your jumps!
+                        Have fun and good luck!
                     </p>
                 </div>
             </div>
