@@ -74,8 +74,10 @@ export class SingleProps extends Component {
             GameManager.instance.editEquippedIds(this._propsID, false);
             return;
         }
-        if (!GameManager.instance.checkIfEquipMore())
+        if (!GameManager.instance.checkIfEquipMore()) {
+            GameManager.instance.showError("Can't equip more!");
             return;
+        }
         this._sprite.grayscale = this._isChosen;
         this._isChosen = !this._isChosen;
         GameManager.instance.editEquippedIds(this._propsID, true);

@@ -166,8 +166,9 @@ export class GameManager extends Component {
         this.waitingUI.active = false;
     }
 
-    showError() {
+    showError(msg: string = "Error...") {
         this.errorUI.active = true;
+        this.errorUI.getComponent(Label).string = msg;
         this.scheduleOnce(() => this.errorUI.active = false, 3);
     }
 
