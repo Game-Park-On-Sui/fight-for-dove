@@ -17,11 +17,11 @@ export class PlayerInfo extends Component {
     moveSpeed: Label = null;
 
     showInfo(info: PlayerInfoType) {
-        this.hp.string = info.hp.toString();
-        this.attack.string = info.attack.toString();
-        this.criticalHitRate.string = (info.criticalHitRate * 100).toString() + "%";
-        this.criticalDamage.string = (info.criticalDamage * 100).toString() + "%";
-        this.moveSpeed.string = info.moveSpeed.toString();
+        this.hp.string = info.hp.toFixed(0);
+        this.attack.string = info.attack.toFixed(0);
+        this.criticalHitRate.string = (info.criticalHitRate * 100).toFixed(0) + "%";
+        this.criticalDamage.string = (info.criticalDamage * 100).toFixed(0) + "%";
+        this.moveSpeed.string = info.moveSpeed.toFixed(0);
     }
 }
 
