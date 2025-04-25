@@ -124,7 +124,9 @@ export default function Home() {
                         </div>
                         <hr className="w-full border-[#041f4b]"/>
                     </div>
-                    <span className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]">Market</span>
+                    <span className="cursor-pointer text-[#196ae3] hover:text-[#35aaf7]">
+                        <a href="https://game-park-market.vercel.app/" target="_blank" rel="noopener noreferrer">Market</a>
+                    </span>
                     <div className="flex flex-col gap-1 items-center">
                         <input className="w-full font-bold focus:outline-none text-center px-1"
                                placeholder="input Count" value={inputCount} onChange={changeInputCount}/>
