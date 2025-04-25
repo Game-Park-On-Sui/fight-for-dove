@@ -9,7 +9,7 @@ export class TsrpcManager {
         if (!this._instance) {
             this._instance = new TsrpcManager();
             this._instance._apiClient = new HttpClient(serviceProto, {
-                server: "http://127.0.0.1:7459",
+                server: "http://47.98.228.198:7459",
                 json: true
             });
         }
