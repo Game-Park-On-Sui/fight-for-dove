@@ -104,7 +104,12 @@ export class GameManager extends Component {
     @property({type: Node})
     errorUI: Node = null;
 
-    handleClickStartGame() {
+    async handleClickStartGame() {
+        if (this._curLevel === 1) {
+            this.waitingUI.active = true;
+            const info = await TsrpcManager.instance.getGameInfo(localStorage.getItem("address"));
+            GameManager.instance.refreshGameInfo(info);
+        }
         if (this._newGameCount < 1 && this._curLevel === 1) {
             GameManager.instance.showError();
             return;
